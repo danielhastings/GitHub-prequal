@@ -28,6 +28,15 @@ nm<-rbind(m,n)
 
 #construct model
 
-nonmonotonicmodel<-glm(nm$survival~nm$temperature, data = nm, family = binomial)
+nonmonotonicmodel<-glm(survival~temperature, data = nm, family = binomial)
 summary(nonmonotonicmodel) #temperature is not a significant predictor of mortality, largely because of the gaussian distribution of the temperature effect. we need to incorporate the gaussian function into the model. 
 
+library(segmented)
+segfit<-segmented(nonmonotonicmodel, seg.Z = ~temperature, npsi = 1)
+summary(segfit)
+require(ggplot2)
+z<-broken.line(segfit)$
+ggplot(nm, aes(x = temperature, y = survival)) + 
+  geom_point() +
+  geom_line(aes(x = temperature, y = z), color = 'blue')
+length(z)
